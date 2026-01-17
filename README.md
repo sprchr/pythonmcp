@@ -67,7 +67,7 @@ LLM Answer Generation
 ---
 System Architecture
 
----
+
 ┌─────────────────┐        HTTP/UI        ┌─────────────────┐
 │   Web Browser   │ ◄──────────────────► │   Web Server    │
 │                 │                      │                 │
@@ -97,6 +97,7 @@ System Architecture
                                       │  └──────────────────┘  │
                                       └────────────────────────┘
 
+---
 
 ## ⚡ Quick Start
 
