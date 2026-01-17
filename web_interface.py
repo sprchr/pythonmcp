@@ -1,0 +1,227 @@
+#!/usr/bin/env python3
+"""
+Simple web interface for Document Q&A MCP Server
+
+Provides a basic HTML interface to interact with the server.
+"""
+
+import asyncio
+import json
+import os
+from pathlib import Path
+from document_qa_server import DocumentQAServer, handle_mcp_request
+
+
+class WebInterface:
+    """Simple web interface for the Document Q&A server."""
+    
+    def __init__(self):
+        """Initialize the web interface."""
+        api_key = os.getenv("OPENAI_API_KEY")
+        if not api_key:
+            raise ValueError("OPENAI_API_KEY environment variable is required")
+        self.server = DocumentQAServer(api_key)
+    
+    def generate_html_interface(self):
+        """Generate HTML interface."""
+        html_content = """
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document Q&A MCP Server With Results Validated By Agent</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background-color: #fafafa;
+        }
+        .section h2 {
+            margin-top: 0;
+            color: #555;
+        }
+        input[type="text"], textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #007cba;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+        button:hover {
+            background-color: #005a87;
+        }
+        .result {
+            margin-top: 15px;
+            padding: 15px;
+            border-radius: 4px;
+            background-color: #e8f4f8;
+            border-left: 4px solid #007cba;
+        }
+        .error {
+            background-color: #ffeaea;
+            border-left-color: #d63384;
+        }
+        .status-info {
+            background-color: #f0f9ff;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+        .file-formats {
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+        }
+        .sources {
+            margin-top: 10px;
+            font-size: 12px;
+            color: #666;
+        }
+        .confidence {
+            font-weight: bold;
+            color: #007cba;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Document Q&A MCP Server With Results Validated By Agent</h1>
+        
+        <div class="status-info">
+            <strong>Server Status:</strong> <span id="server-status">Active</span><br>
+            <strong>Loaded Documents:</strong> <span id="loaded-docs">None</span><br>
+            <strong>Total Chunks:</strong> <span id="total-chunks">0</span>
+        </div>
+        
+        <div class="section">
+            <h2>📄 Load Document</h2>
+            <input type="text" id="file-path" placeholder="Enter file path (e.g., document.pdf, text.txt, readme.md)">
+            <div class="file-formats">Supported formats: PDF, TXT, Markdown (.md)</div>
+            <button onclick="loadDocument()">Load Document</button>
+            <div id="load-result"></div>
+        </div>
+        
+        <div class="section">
+            <h2>❓ Ask Question</h2>
+            <textarea id="question" rows="3" placeholder="Enter your question about the loaded documents..."></textarea>
+            <button onclick="askQuestion()">Ask Question</button>
+            <div id="question-result"></div>
+        </div>
+        
+        <div class="section">
+            <h2>📊 Server Information</h2>
+            <button onclick="updateStatus()">Refresh Status</button>
+            <div id="status-result"></div>
+        </div>
+    </div>
+
+    <script>
+        // Note: This is a static HTML demo. In a real implementation, 
+        // you would need a web server to handle the backend requests.
+        
+        function showResult(elementId, content, isError = false) {
+            const element = document.getElementById(elementId);
+            element.innerHTML = content;
+            element.className = isError ? 'result error' : 'result';
+        }
+        
+        function loadDocument() {
+            const filePath = document.getElementById('file-path').value;
+            if (!filePath) {
+                showResult('load-result', 'Please enter a file path', true);
+                return;
+            }
+            
+            // Simulate loading (in real implementation, this would be an API call)
+            showResult('load-result', `
+                <strong>✅ Document Loading Simulation</strong><br>
+                File: ${filePath}<br>
+                Status: This is a demo interface. To actually load documents, use the Python client.<br>
+                <em>Run: python interactive_client.py</em>
+            `);
+        }
+        
+        function askQuestion() {
+            const question = document.getElementById('question').value;
+            if (!question) {
+                showResult('question-result', 'Please enter a question', true);
+                return;
+            }
+            
+            // Simulate question answering
+            showResult('question-result', `
+                <strong>💡 Question Processing Simulation</strong><br>
+                Question: ${question}<br>
+                Status: This is a demo interface. To actually ask questions, use the Python client.<br>
+                <em>Run: python interactive_client.py</em>
+            `);
+        }
+        
+        function updateStatus() {
+            showResult('status-result', `
+                <strong>📊 Server Status</strong><br>
+                Status: Active (Background Process)<br>
+                Interface: Demo Mode<br>
+                <em>For full functionality, use: python interactive_client.py</em>
+            `);
+        }
+        
+        // Initialize status on page load
+        window.onload = function() {
+            updateStatus();
+        }
+    </script>
+</body>
+</html>
+        """
+        
+        return html_content
+
+
+def create_web_interface():
+    """Create the web interface HTML file."""
+    interface = WebInterface()
+    html_content = interface.generate_html_interface()
+    
+    with open("web_interface.html", "w", encoding="utf-8") as f:
+        f.write(html_content)
+    
+    print("🌐 Web interface created: web_interface.html")
+    print("📝 Open this file in your browser for a visual interface")
+    print("💡 For full functionality, use: python interactive_client.py")
+
+
+if __name__ == "__main__":
+    create_web_interface()
