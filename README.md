@@ -66,3 +66,14 @@ python web_server.py
 
 # Open in browser
 http://localhost:8000
+
+User Question
+     ↓
+Semantic Retrieval (Top-K Chunks)
+     ↓
+LLM Answer Generation
+     ↓
+🛡️ Validation Agent
+     ├─ ❌ Not Verified → Response Blocked
+     └─ ✅ Verified → Answer Returned
+
